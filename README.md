@@ -2,13 +2,17 @@
 
 Haz clic en cualquiera de los siguientes enlaces para descargar directamente el archivo a tu computadora, teléfono o tableta:
 
-## 📱 Copias de Seguridad `.jwlibrary` (Importar Notas Directamente en la App JW Library)
-> ⚠️ **Importante antes de restaurar en JW Library:** Al usar *"Restaurar copia de seguridad"* en JW Library, la aplicación reemplaza las notas actuales del dispositivo por las del archivo `.jwlibrary`. Haz primero una copia de seguridad de tus notas actuales o úsalo en un dispositivo dedicado (o fusiona tu copia con una herramienta como [JW Notes Sync](https://github.com/DipandaAser/jw-notes-sync)).
+## 📱 Copias de Seguridad `.jwlibrary` Fusionadas con tu Respaldo (`Samsung_SM-F971B` — Schema v16)
+*Conservan intactas tus **58 notas personales**, **1,718 subrayados**, **58 cuadros de texto rellenados**, **21 marcadores** y tus etiquetas originales, y agregan todas las notas de estudio del libro de los precursores (`pt14_S`):*
 
-- 🗒️ **[Descargar `Guia_Estudio_Precursores_Notas_por_Parrafo.jwlibrary` (Recomendado — 700 notas, 3.03 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Guia_Estudio_Precursores_Notas_por_Parrafo.jwlibrary)**
-  *1 nota completa anclada al lado de cada pregunta/párrafo (`data-pid`) del libro `pt14_S` en JW Library: incluye todos los textos bíblicos literales (`nwtsty_S`), notas al pie, notas de estudio (`nwtsty_S`), extractos directos de la lección (`pt14_S`) y extractos de Perspicacia (`it_S`) y la Guía de Estudio (`rsg_S`), además de 40 etiquetas (`Tags`) por lección.*
-- 🗒️ **[Descargar `Guia_Estudio_Precursores_Notas_por_Cita.jwlibrary` (1,245 notas individuales, 3.16 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Guia_Estudio_Precursores_Notas_por_Cita.jwlibrary)**
-  *1 nota separada por cada cita bíblica o referencia individual dentro de cada pregunta/párrafo del libro `pt14_S` en JW Library, también etiquetadas por lección.*
+- ⭐ **[Descargar `Backup_Fusionado_Samsung_Notas_por_Parrafo.jwlibrary` (Recomendado — 758 notas totales + 1,718 subrayados, 3.23 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_Fusionado_Samsung_Notas_por_Parrafo.jwlibrary)**
+  *Tus datos personales intactos + 700 notas completas ancladas al lado de cada pregunta/párrafo (`data-pid`) del libro `pt14_S` en JW Library.*
+- ⭐ **[Descargar `Backup_Fusionado_Samsung_Notas_por_Cita.jwlibrary` (1,303 notas totales + 1,718 subrayados, 3.38 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_Fusionado_Samsung_Notas_por_Cita.jwlibrary)**
+  *Tus datos personales intactos + 1,245 notas separadas por cada cita bíblica o referencia individual en cada pregunta/párrafo de `pt14_S`.*
+
+### Copias `.jwlibrary` limpias (únicamente con las notas de `pt14_S`, sin tus notas previas)
+- 🗒️ **[Descargar `Guia_Estudio_Precursores_Notas_por_Parrafo.jwlibrary` (700 notas, 3.07 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Guia_Estudio_Precursores_Notas_por_Parrafo.jwlibrary)**
+- 🗒️ **[Descargar `Guia_Estudio_Precursores_Notas_por_Cita.jwlibrary` (1,245 notas individuales, 3.22 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Guia_Estudio_Precursores_Notas_por_Cita.jwlibrary)**
 
 ---
 
