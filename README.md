@@ -2,7 +2,24 @@
 
 Haz clic en cualquiera de los siguientes enlaces para descargar directamente el archivo a tu computadora, teléfono o tableta:
 
-## 🌟 NUEVO: Copias `.jwlibrary` con las Notas del Agente + Subrayados Visuales + Respaldo Completo (Fusionadas con tu `Samsung_SM-F971B` — Schema v16)
+## 🚀 NUEVO (iPad + Libro Duplicado `pt14g`): Publicación `.jwpub` con Respuestas Incrustadas + Copias `.jwlibrary` Fusionadas con tu iPad
+*Instala un **segundo libro independiente** (`pt14g` — **«Libro de los precursores — Guía de Estudio»**) dentro de JW Library sin tocar tu libro `pt14` original, y restaura tu copia de seguridad de **iPad** (`UserdataBackup_2026-11-14_iPad.jwlibrary` — conserva intactas tus **33 notas personales** [incluidas tus 26 notas en el `pt14` original], tus **11,720 subrayados personales** [incluidos tus 133 subrayados en el `pt14` original] y tus **161 cuadros de texto**):*
+
+### Paso 1: Descarga y abre en JW Library el Libro Duplicado (`.jwpub`)
+- 📘 **[Descargar `pt14g_Guia_Con_Respuestas_Incrustadas_S.jwpub` (Opción B Recomendada — Respuestas y Análisis incrustados en las páginas del libro, 2.28 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/pt14g_Guia_Con_Respuestas_Incrustadas_S.jwpub)**
+  *Trae incrustados debajo de cada pregunta/párrafo la **✅ Respuesta directa**, el **📖 Análisis de los textos** y el **💎 Análisis de referencias y perlas** con borde lateral de color, manteniendo todos los enlaces interactivos nativos de JW Library a la Biblia y a las referencias.*
+- 📗 **[Descargar `pt14g_Libro_Duplicado_Paginas_Limpias_S.jwpub` (Opción A Opcional — Mismo libro duplicado `pt14g` pero con páginas sin texto incrustado, 1.63 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/pt14g_Libro_Duplicado_Paginas_Limpias_S.jwpub)**
+
+### Paso 2: Descarga y restaura en JW Library tu Copia de Seguridad de iPad (`.jwlibrary`) vinculada a `pt14g`
+*(Elige cualquiera de las 3 modalidades según cómo prefieras ver el panel lateral de notas dentro del libro duplicado `pt14g`; las 3 incluyen los **1,097 subrayados por colores** en `pt14g` y conservan intacto tu respaldo de iPad):*
+- 🏆 **[Descargar `Backup_iPad_pt14g_Solo_Respaldo_en_Notas.jwlibrary` (Ideal para la Opción B — 1 Nota lateral por párrafo solo con el Respaldo Extra, 4.88 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Solo_Respaldo_en_Notas.jwlibrary)**
+  *Como la Respuesta y el Análisis ya están incrustados en la página del libro `pt14g`, la nota lateral vinculada al subrayado no los repite y va directo a las **📝 Notas de estudio y al pie (`nwtsty`)**, **📖 Textos adicionales citados** y **📚 Extractos literales de respaldo** (`pt14_S`, `it_S`, `rsg_S`).*
+- ⭐ **[Descargar `Backup_iPad_pt14g_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary` (2 Tarjetas laterales por párrafo en `pt14g`: Tarjeta 1 Respuesta/Análisis + Tarjeta 2 Respaldo Extra, 5.68 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary)**
+- ⭐ **[Descargar `Backup_iPad_pt14g_Una_Tarjeta_Todo_en_Uno.jwlibrary` (1 Tarjeta lateral Todo-en-Uno por párrafo en `pt14g`: Respuesta + Análisis + Respaldo Extra, 5.53 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Una_Tarjeta_Todo_en_Uno.jwlibrary)**
+
+---
+
+## 🌟 Copias `.jwlibrary` sobre el libro original `pt14` (Fusionadas con `Samsung_SM-F971B` — Schema v16)
 *Conservan intactas tus **58 notas personales**, **1,717 subrayados**, **58 cuadros de texto rellenados**, **21 marcadores** y tus etiquetas originales, y agregan las **1,097 unidades de estudio** de tu EPUB generado por el agente sobre el libro `pt14_S`, unidas visualmente mediante **subrayados por colores** (`UserMark` + `BlockRange`) sin repetir las preguntas del libro ni los versículos que ya están en el párrafo:*
 
 - 🏆 **[Descargar `Backup_JW_Agente_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary` (Recomendado — 2 Tarjetas por Párrafo para no abrumar, 5.18 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_JW_Agente_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary)**
