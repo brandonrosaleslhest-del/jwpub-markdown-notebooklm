@@ -1,6 +1,16 @@
-# EPUB 3 Interactivo, Dossiers de Estudio y Archivos Markdown (`pt14_S`, `nwtsty_S`, `rsg_S` e `it_S`)
+# Notas para JW Library (`.jwlibrary`), EPUB 3 Interactivo y Dossiers de Estudio (`pt14_S`, `nwtsty_S`, `rsg_S` e `it_S`)
 
-Haz clic en cualquiera de los siguientes enlaces para descargar directamente el archivo a tu computadora o celular:
+Haz clic en cualquiera de los siguientes enlaces para descargar directamente el archivo a tu computadora, teléfono o tableta:
+
+## 📱 Copias de Seguridad `.jwlibrary` (Importar Notas Directamente en la App JW Library)
+> ⚠️ **Importante antes de restaurar en JW Library:** Al usar *"Restaurar copia de seguridad"* en JW Library, la aplicación reemplaza las notas actuales del dispositivo por las del archivo `.jwlibrary`. Haz primero una copia de seguridad de tus notas actuales o úsalo en un dispositivo dedicado (o fusiona tu copia con una herramienta como [JW Notes Sync](https://github.com/DipandaAser/jw-notes-sync)).
+
+- 🗒️ **[Descargar `Guia_Estudio_Precursores_Notas_por_Parrafo.jwlibrary` (Recomendado — 700 notas, 3.03 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Guia_Estudio_Precursores_Notas_por_Parrafo.jwlibrary)**
+  *1 nota completa anclada al lado de cada pregunta/párrafo (`data-pid`) del libro `pt14_S` en JW Library: incluye todos los textos bíblicos literales (`nwtsty_S`), notas al pie, notas de estudio (`nwtsty_S`), extractos directos de la lección (`pt14_S`) y extractos de Perspicacia (`it_S`) y la Guía de Estudio (`rsg_S`), además de 40 etiquetas (`Tags`) por lección.*
+- 🗒️ **[Descargar `Guia_Estudio_Precursores_Notas_por_Cita.jwlibrary` (1,245 notas individuales, 3.16 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Guia_Estudio_Precursores_Notas_por_Cita.jwlibrary)**
+  *1 nota separada por cada cita bíblica o referencia individual dentro de cada pregunta/párrafo del libro `pt14_S` en JW Library, también etiquetadas por lección.*
+
+---
 
 ## 📲 EPUB 3 Interactivo con Ventanas Emergentes (Pop-ups)
 - 📖 **[Descargar EPUB 3 Interactivo (`Guia_Estudio_Precursores_Interactiva.epub` — 3.83 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Guia_Estudio_Precursores_Interactiva.epub)**
