@@ -384,19 +384,20 @@ def build_duplicated_jwpub(
 
     contents_buf = io.BytesIO()
     expanded_size = 0
-    with zipfile.ZipFile(contents_buf, "w", zipfile.ZIP_DEFLATED) as z_in_out:
+    with zipfile.ZipFile(contents_buf, "w") as z_in_out:
         for fname in sorted(os.listdir(inner_dir)):
             fpath = os.path.join(inner_dir, fname)
             expanded_size += os.path.getsize(fpath)
-            z_in_out.write(fpath, fname)
+            comp_type = zipfile.ZIP_DEFLATED if fname.endswith(".db") else zipfile.ZIP_STORED
+            z_in_out.write(fpath, fname, compress_type=comp_type)
 
     new_contents_bytes = contents_buf.getvalue()
     contents_sha256 = hashlib.sha256(new_contents_bytes).hexdigest()
 
-    now_iso = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    manifest["name"] = os.path.basename(out_jwpub_path)
+    pub_ts = "2025-06-03T14:48:36Z"
+    manifest["name"] = f"{NEW_SYMBOL}_S.jwpub"
     manifest["hash"] = contents_sha256
-    manifest["timestamp"] = now_iso
+    manifest["timestamp"] = pub_ts
     manifest["expandedSize"] = expanded_size
 
     pub_m = manifest["publication"]
@@ -417,12 +418,11 @@ def build_duplicated_jwpub(
     pub_m["englishSymbol"] = NEW_SYMBOL
     pub_m["rootSymbol"] = NEW_SYMBOL
     pub_m["hash"] = db_sha1
-    pub_m["timestamp"] = now_iso
+    pub_m["timestamp"] = pub_ts
 
-    with zipfile.ZipFile(out_jwpub_path, "w", zipfile.ZIP_DEFLATED) as z_out:
-        z_out.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False))
-        # 'contents' suele almacenarse en el zip externo
-        z_out.writestr("contents", new_contents_bytes)
+    with zipfile.ZipFile(out_jwpub_path, "w") as z_out:
+        z_out.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent="\t"), compress_type=zipfile.ZIP_DEFLATED)
+        z_out.writestr("contents", new_contents_bytes, compress_type=zipfile.ZIP_STORED)
 
     shutil.rmtree(work_dir, ignore_errors=True)
     return os.path.getsize(out_jwpub_path)
@@ -685,6 +685,266 @@ def build_ipad_merged_jwlibrary(
     return added_notes, added_usermarks, tot_notes, tot_um, os.path.getsize(out_path)
 
 
+def build_ipad_official_pt14(
+    base_ipad_path: str,
+    chapters_data: list,
+    two_cards: bool,
+    out_path: str,
+):
+    """
+    Fusiona las 1,097 unidades del agente directamente sobre el libro oficial 'pt14'
+    en la copia de seguridad de iPad (UserdataBackup_2026-11-14_iPad.jwlibrary),
+    respetando intactas las 26 notas personales y los 133 subrayados personales en 'pt14'
+    (sin sobrescribir ningún párrafo donde el usuario ya tenga subrayados propios).
+    """
+    suffix = "2c" if two_cards else "1c"
+    work_dir = f"/tmp/jwl_ipad_official_{os.getpid()}_{suffix}"
+    shutil.rmtree(work_dir, ignore_errors=True)
+    os.makedirs(work_dir, exist_ok=True)
+    with zipfile.ZipFile(base_ipad_path, "r") as z:
+        z.extractall(work_dir)
+    db_path = os.path.join(work_dir, "userData.db")
+    now_iso = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    today_str = now_iso.split("T")[0]
+
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+    cur.execute("PRAGMA journal_mode = DELETE")
+    cur.execute("PRAGMA foreign_keys = OFF")
+
+    next_loc_id = cur.execute("SELECT COALESCE(MAX(LocationId), 0) + 1 FROM Location").fetchone()[0]
+    next_um_id = cur.execute("SELECT COALESCE(MAX(UserMarkId), 0) + 1 FROM UserMark").fetchone()[0]
+    next_br_id = cur.execute("SELECT COALESCE(MAX(BlockRangeId), 0) + 1 FROM BlockRange").fetchone()[0]
+    next_note_id = cur.execute("SELECT COALESCE(MAX(NoteId), 0) + 1 FROM Note").fetchone()[0]
+    next_tag_id = cur.execute("SELECT COALESCE(MAX(TagId), 0) + 1 FROM Tag").fetchone()[0]
+    next_tagmap_id = cur.execute("SELECT COALESCE(MAX(TagMapId), 0) + 1 FROM TagMap").fetchone()[0]
+
+    tag_cache = {}
+    tag_pos_counter = {}
+    for tid, ttype, tname in cur.execute("SELECT TagId, Type, Name FROM Tag"):
+        if ttype == 1:
+            tag_cache[tname] = tid
+            max_pos = cur.execute(
+                "SELECT COALESCE(MAX(Position), -1) FROM TagMap WHERE TagId = ?", (tid,)
+            ).fetchone()[0]
+            tag_pos_counter[tid] = max_pos + 1
+
+    def get_or_create_tag(tname: str) -> int:
+        nonlocal next_tag_id
+        if tname in tag_cache:
+            return tag_cache[tname]
+        tid = next_tag_id
+        next_tag_id += 1
+        cur.execute("INSERT INTO Tag (TagId, Type, Name) VALUES (?, 1, ?)", (tid, tname))
+        tag_cache[tname] = tid
+        tag_pos_counter[tid] = 0
+        return tid
+
+    def attach_tag(note_id: int, tid: int):
+        nonlocal next_tagmap_id
+        pos = tag_pos_counter[tid]
+        tag_pos_counter[tid] = pos + 1
+        cur.execute(
+            "INSERT INTO TagMap (TagMapId, PlaylistItemId, LocationId, NoteId, TagId, Position) VALUES (?, NULL, NULL, ?, ?, ?)",
+            (next_tagmap_id, note_id, tid, pos),
+        )
+        next_tagmap_id += 1
+
+    # Etiquetar las 26 notas personales existentes en pt14 para que el usuario las filtre fácilmente
+    tag_personal_id = get_or_create_tag("0. Mis Notas Personales (pt14)")
+    for (p_nid,) in cur.execute(
+        'SELECT n.NoteId FROM Note n JOIN Location l ON n.LocationId=l.LocationId WHERE l.KeySymbol="pt14"'
+    ).fetchall():
+        attach_tag(p_nid, tag_personal_id)
+
+    tag_respuestas_id = get_or_create_tag("1. Respuestas y Análisis (pt14)")
+    tag_respaldo_id = get_or_create_tag("2. Respaldo y Notas Extras (pt14)")
+
+    added_notes = 0
+    added_usermarks = 0
+    reused_usermarks = 0
+
+    for ch in chapters_data:
+        meps_doc_id = ch["meps_doc_id"]
+        clean_title = ch["clean_title"]
+        tag_name = ch["tag_name"]
+        units = ch["units"]
+        if not units:
+            continue
+
+        row_loc = cur.execute(
+            'SELECT LocationId FROM Location WHERE KeySymbol = "pt14" AND MepsLanguage = 1 AND DocumentId = ? AND Type = 0',
+            (meps_doc_id,),
+        ).fetchone()
+        if row_loc:
+            loc_id = row_loc[0]
+        else:
+            loc_id = next_loc_id
+            next_loc_id += 1
+            cur.execute(
+                """
+                INSERT INTO Location (
+                    LocationId, BookNumber, ChapterNumber, DocumentId, Track,
+                    IssueTagNumber, KeySymbol, MepsLanguage, Type, Title, Specialty, Edition
+                ) VALUES (?, NULL, NULL, ?, NULL, 0, 'pt14', 1, 0, ?, NULL, NULL)
+                """,
+                (loc_id, meps_doc_id, clean_title),
+            )
+
+        existing_um_by_pid = {}
+        for ex_pid, ex_umid in cur.execute(
+            """
+            SELECT br.Identifier, u.UserMarkId
+            FROM UserMark u
+            JOIN BlockRange br ON br.UserMarkId = u.UserMarkId
+            WHERE u.LocationId = ? AND br.BlockType = 1
+            ORDER BY br.StartToken ASC, u.UserMarkId ASC
+            """,
+            (loc_id,),
+        ).fetchall():
+            existing_um_by_pid.setdefault(ex_pid, ex_umid)
+
+        lesson_tag_id = get_or_create_tag(tag_name)
+
+        for u in units:
+            pid = u["pid"]
+            color_idx = u["color_idx"]
+            block_ranges = u["block_ranges"]
+            main_title = u["main_title"]
+            main_body = u["main_body"]
+            backing_title = u["backing_title"]
+            backing_body = u["backing_body"]
+            u_hdr = u["heading"]
+
+            if pid in existing_um_by_pid:
+                reused_usermarks += 1
+                cand_um = existing_um_by_pid[pid]
+                has_note_on_um = cur.execute(
+                    "SELECT 1 FROM Note WHERE UserMarkId = ?", (cand_um,)
+                ).fetchone()
+                um_id = None if has_note_on_um else cand_um
+            else:
+                um_id = next_um_id
+                next_um_id += 1
+                um_guid = str(
+                    uuid.uuid5(uuid.NAMESPACE_DNS, f"jwl-ipad-um-{meps_doc_id}-{pid}-{u_hdr}")
+                )
+                cur.execute(
+                    """
+                    INSERT INTO UserMark (
+                        UserMarkId, ColorIndex, LocationId, StyleIndex, UserMarkGuid, Version
+                    ) VALUES (?, ?, ?, 0, ?, 1)
+                    """,
+                    (um_id, color_idx, loc_id, um_guid),
+                )
+                added_usermarks += 1
+                for cpid, st_tok, end_tok in block_ranges:
+                    if cpid in existing_um_by_pid:
+                        continue
+                    cur.execute(
+                        """
+                        INSERT INTO BlockRange (
+                            BlockRangeId, BlockType, Identifier, StartToken, EndToken, UserMarkId
+                        ) VALUES (?, 1, ?, ?, ?, ?)
+                        """,
+                        (next_br_id, cpid, st_tok, end_tok, um_id),
+                    )
+                    next_br_id += 1
+
+            if two_cards:
+                n1_id = next_note_id
+                next_note_id += 1
+                n1_guid = str(
+                    uuid.uuid5(uuid.NAMESPACE_DNS, f"jwl-ipad-n1-{meps_doc_id}-{pid}-{u_hdr}")
+                )
+                cur.execute(
+                    """
+                    INSERT INTO Note (
+                        NoteId, Guid, UserMarkId, LocationId, Title, Content,
+                        LastModified, Created, BlockType, BlockIdentifier
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+                    """,
+                    (n1_id, n1_guid, um_id, loc_id, main_title, main_body, now_iso, now_iso, pid),
+                )
+                attach_tag(n1_id, tag_respuestas_id)
+                attach_tag(n1_id, lesson_tag_id)
+                added_notes += 1
+
+                if backing_body:
+                    n2_id = next_note_id
+                    next_note_id += 1
+                    n2_guid = str(
+                        uuid.uuid5(uuid.NAMESPACE_DNS, f"jwl-ipad-n2-{meps_doc_id}-{pid}-{u_hdr}")
+                    )
+                    cur.execute(
+                        """
+                        INSERT INTO Note (
+                            NoteId, Guid, UserMarkId, LocationId, Title, Content,
+                            LastModified, Created, BlockType, BlockIdentifier
+                        ) VALUES (?, ?, NULL, ?, ?, ?, ?, ?, 1, ?)
+                        """,
+                        (n2_id, n2_guid, loc_id, backing_title, backing_body, now_iso, now_iso, pid),
+                    )
+                    attach_tag(n2_id, tag_respaldo_id)
+                    attach_tag(n2_id, lesson_tag_id)
+                    added_notes += 1
+            else:
+                sep = "━" * 26
+                full_body = main_body
+                if backing_body:
+                    full_body += f"\n\n{sep}\n📎 RESPALDO Y NOTAS EXTRAS\n{sep}\n\n{backing_body}"
+                n1_id = next_note_id
+                next_note_id += 1
+                n1_guid = str(
+                    uuid.uuid5(uuid.NAMESPACE_DNS, f"jwl-ipad-1c-{meps_doc_id}-{pid}-{u_hdr}")
+                )
+                cur.execute(
+                    """
+                    INSERT INTO Note (
+                        NoteId, Guid, UserMarkId, LocationId, Title, Content,
+                        LastModified, Created, BlockType, BlockIdentifier
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+                    """,
+                    (n1_id, n1_guid, um_id, loc_id, main_title, full_body, now_iso, now_iso, pid),
+                )
+                attach_tag(n1_id, tag_respuestas_id)
+                if backing_body:
+                    attach_tag(n1_id, tag_respaldo_id)
+                attach_tag(n1_id, lesson_tag_id)
+                added_notes += 1
+
+    cur.execute("UPDATE LastModified SET LastModified = ?", (now_iso,))
+    cur.execute("PRAGMA foreign_keys = ON")
+    conn.commit()
+    cur.execute("VACUUM")
+    conn.close()
+
+    with open(db_path, "rb") as f:
+        db_sha256 = hashlib.sha256(f.read()).hexdigest()
+
+    manifest_path = os.path.join(work_dir, "manifest.json")
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest = json.load(f)
+    manifest["name"] = os.path.basename(out_path)
+    manifest["creationDate"] = today_str
+    manifest["userDataBackup"]["lastModifiedDate"] = today_str
+    manifest["userDataBackup"]["hash"] = db_sha256
+    manifest["userDataBackup"]["databaseName"] = "userData.db"
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, ensure_ascii=False)
+
+    with zipfile.ZipFile(out_path, "w", zipfile.ZIP_DEFLATED) as zout:
+        zout.write(manifest_path, "manifest.json")
+        zout.write(db_path, "userData.db")
+        thumb_path = os.path.join(work_dir, "default_thumbnail.png")
+        if os.path.exists(thumb_path):
+            zout.write(thumb_path, "default_thumbnail.png")
+
+    shutil.rmtree(work_dir, ignore_errors=True)
+    return added_notes, added_usermarks, reused_usermarks, os.path.getsize(out_path)
+
+
 def main():
     t0 = time.time()
     ensure_dbs_extracted()
@@ -700,7 +960,7 @@ def main():
     total_units = sum(len(ch["units"]) for ch in chapters_data)
     print(f"Unidades extraídas del EPUB del agente: {total_units} en {len(chapters_data)} capítulos")
 
-    # 1. Generar los dos archivos .jwpub duplicados ('pt14g')
+    # 1. Generar los dos archivos .jwpub duplicados ('pt14g') con empaquetado MEPS exacto
     jwpub_embed = "/home/antigravity/pt14g_Guia_Con_Respuestas_Incrustadas_S.jwpub"
     sz_embed = build_duplicated_jwpub(orig_jwpub_path, chapters_data, True, jwpub_embed)
     print(f"Generado JWPUB Opción B (respuestas incrustadas): {os.path.basename(jwpub_embed)} ({sz_embed / (1024*1024):.2f} MB)")
@@ -709,7 +969,18 @@ def main():
     sz_clean = build_duplicated_jwpub(orig_jwpub_path, chapters_data, False, jwpub_clean)
     print(f"Generado JWPUB Opción A (páginas limpias): {os.path.basename(jwpub_clean)} ({sz_clean / (1024*1024):.2f} MB)")
 
-    # 2. Generar las copias .jwlibrary fusionadas con UserdataBackup_2026-11-14_iPad.jwlibrary
+    # 2. Generar las copias .jwlibrary fusionadas con iPad directamente sobre el libro oficial 'pt14'
+    for two_c, out_p in [
+        (True, "/home/antigravity/Backup_iPad_Oficial_pt14_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary"),
+        (False, "/home/antigravity/Backup_iPad_Oficial_pt14_Una_Tarjeta_Todo_en_Uno.jwlibrary"),
+    ]:
+        na, uma, umr, sz = build_ipad_official_pt14(base_ipad_jwl, chapters_data, two_c, out_p)
+        print(
+            f"Generado iPad sobre pt14 oficial: {os.path.basename(out_p)} ({sz / (1024*1024):.2f} MB) "
+            f"-> +{na} notas, +{uma} subrayados nuevos, {umr} párrafos con subrayados personales intactos"
+        )
+
+    # 3. Generar las copias .jwlibrary fusionadas con UserdataBackup_2026-11-14_iPad.jwlibrary para 'pt14g'
     configs = [
         ("backing_only", "/home/antigravity/Backup_iPad_pt14g_Solo_Respaldo_en_Notas.jwlibrary"),
         ("two_cards", "/home/antigravity/Backup_iPad_pt14g_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary"),

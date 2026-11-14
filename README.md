@@ -2,20 +2,27 @@
 
 Haz clic en cualquiera de los siguientes enlaces para descargar directamente el archivo a tu computadora, teléfono o tableta:
 
-## 🚀 NUEVO (iPad + Libro Duplicado `pt14g`): Publicación `.jwpub` con Respuestas Incrustadas + Copias `.jwlibrary` Fusionadas con tu iPad
-*Instala un **segundo libro independiente** (`pt14g` — **«Libro de los precursores — Guía de Estudio»**) dentro de JW Library sin tocar tu libro `pt14` original, y restaura tu copia de seguridad de **iPad** (`UserdataBackup_2026-11-14_iPad.jwlibrary` — conserva intactas tus **33 notas personales** [incluidas tus 26 notas en el `pt14` original], tus **11,720 subrayados personales** [incluidos tus 133 subrayados en el `pt14` original] y tus **161 cuadros de texto**):*
+## 🌟 SOLUCIÓN DIRECTA PARA TU IPAD / SAMSUNG (Sobre el libro oficial `pt14` — Sin error de instalación de `.jwpub`)
+*Fusionadas directamente con tu copia de seguridad de **iPad** (`UserdataBackup_2026-11-14_iPad.jwlibrary` — Schema v16). Funcionan de inmediato en la **última versión de JW Library** sobre el libro oficial `pt14` sin necesidad de instalar un `.jwpub` modificado, **respetando al 100% tus 26 notas personales en `pt14` (etiquetadas como `0. Mis Notas Personales (pt14)`), tus 133 subrayados personales por palabras en `pt14` (sin sobrescribir los 68 párrafos que tú ya habías subrayado), tus 11,720 subrayados totales y tus 161 cuadros de texto**:*
 
-### Paso 1: Descarga y abre en JW Library el Libro Duplicado (`.jwpub`)
-- 📘 **[Descargar `pt14g_Guia_Con_Respuestas_Incrustadas_S.jwpub` (Opción B Recomendada — Respuestas y Análisis incrustados en las páginas del libro, 2.28 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/pt14g_Guia_Con_Respuestas_Incrustadas_S.jwpub)**
-  *Trae incrustados debajo de cada pregunta/párrafo la **✅ Respuesta directa**, el **📖 Análisis de los textos** y el **💎 Análisis de referencias y perlas** con borde lateral de color, manteniendo todos los enlaces interactivos nativos de JW Library a la Biblia y a las referencias.*
-- 📗 **[Descargar `pt14g_Libro_Duplicado_Paginas_Limpias_S.jwpub` (Opción A Opcional — Mismo libro duplicado `pt14g` pero con páginas sin texto incrustado, 1.63 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/pt14g_Libro_Duplicado_Paginas_Limpias_S.jwpub)**
+- 🏆 **[Descargar `Backup_iPad_Oficial_pt14_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary` (Recomendado — 2 Tarjetas por Párrafo sobre tu respaldo de iPad, 5.68 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_Oficial_pt14_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary)**
+  - **Tarjeta 1 (unida al subrayado del párrafo):** `✅ RESPUESTA DIRECTA` + `📖 ANÁLISIS DE LOS TEXTOS` + `💎 ANÁLISIS DE LAS REFERENCIAS Y PERLAS`.
+  - **Tarjeta 2 (`📎 Respaldo y Notas Extras`, justo debajo en el mismo párrafo):** `📝 NOTAS DE ESTUDIO Y AL PIE (nwtsty)` + `📖 TEXTOS ADICIONALES CITADOS EN EL COMENTARIO` + `📚 EXTRACTOS LITERALES DE RESPALDO` (`pt14_S`, `it_S`, `rsg_S`).
+- ⭐ **[Descargar `Backup_iPad_Oficial_pt14_Una_Tarjeta_Todo_en_Uno.jwlibrary` (1 Sola Tarjeta Todo-en-Uno por Párrafo sobre tu respaldo de iPad, 5.52 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_Oficial_pt14_Una_Tarjeta_Todo_en_Uno.jwlibrary)**
 
-### Paso 2: Descarga y restaura en JW Library tu Copia de Seguridad de iPad (`.jwlibrary`) vinculada a `pt14g`
-*(Elige cualquiera de las 3 modalidades según cómo prefieras ver el panel lateral de notas dentro del libro duplicado `pt14g`; las 3 incluyen los **1,097 subrayados por colores** en `pt14g` y conservan intacto tu respaldo de iPad):*
-- 🏆 **[Descargar `Backup_iPad_pt14g_Solo_Respaldo_en_Notas.jwlibrary` (Ideal para la Opción B — 1 Nota lateral por párrafo solo con el Respaldo Extra, 4.88 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Solo_Respaldo_en_Notas.jwlibrary)**
-  *Como la Respuesta y el Análisis ya están incrustados en la página del libro `pt14g`, la nota lateral vinculada al subrayado no los repite y va directo a las **📝 Notas de estudio y al pie (`nwtsty`)**, **📖 Textos adicionales citados** y **📚 Extractos literales de respaldo** (`pt14_S`, `it_S`, `rsg_S`).*
-- ⭐ **[Descargar `Backup_iPad_pt14g_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary` (2 Tarjetas laterales por párrafo en `pt14g`: Tarjeta 1 Respuesta/Análisis + Tarjeta 2 Respaldo Extra, 5.68 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary)**
-- ⭐ **[Descargar `Backup_iPad_pt14g_Una_Tarjeta_Todo_en_Uno.jwlibrary` (1 Tarjeta lateral Todo-en-Uno por párrafo en `pt14g`: Respuesta + Análisis + Respaldo Extra, 5.53 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Una_Tarjeta_Todo_en_Uno.jwlibrary)**
+---
+
+## 🚀 Opcional (Libro Duplicado `pt14g` para JW Library v15.6 / `jwlIntegrator`): Publicación `.jwpub` con Respuestas Incrustadas + Copias `.jwlibrary`
+*(Nota técnica: A partir de la actualización **v15.7+** de JW Library, la app bloquea la instalación directa de archivos `.jwpub` personalizados cuyos hashes no estén en el catálogo oficial de jw.org mostrando el mensaje «No se pudo completar la instalación». Para instalar un `.jwpub` personalizado como `pt14g` hay que abrirlo primero en **JW Library v15.6.1** [en Android vía APKMirror o en PC/Mac con `jwlIntegrator`] y luego actualizar la app. En cambio, los archivos `.jwlibrary` de la sección de arriba funcionan directamente en cualquier versión de JW Library sin restricción).*
+
+### Paso 1: Libro Duplicado (`.jwpub` con empaquetado MEPS `ZIP_STORED` corregido)
+- 📘 **[Descargar `pt14g_Guia_Con_Respuestas_Incrustadas_S.jwpub` (Opción B — Respuestas y Análisis incrustados en las páginas del libro, 2.29 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/pt14g_Guia_Con_Respuestas_Incrustadas_S.jwpub)**
+- 📗 **[Descargar `pt14g_Libro_Duplicado_Paginas_Limpias_S.jwpub` (Opción A — Mismo libro duplicado `pt14g` con páginas limpias, 1.64 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/pt14g_Libro_Duplicado_Paginas_Limpias_S.jwpub)**
+
+### Paso 2: Copias de Seguridad de iPad (`.jwlibrary`) vinculadas a `pt14g`
+- 🏆 **[Descargar `Backup_iPad_pt14g_Solo_Respaldo_en_Notas.jwlibrary` (1 Nota lateral por párrafo solo con el Respaldo Extra, 4.88 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Solo_Respaldo_en_Notas.jwlibrary)**
+- ⭐ **[Descargar `Backup_iPad_pt14g_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary` (2 Tarjetas laterales por párrafo en `pt14g`, 5.68 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Dos_Tarjetas_Respuesta_y_Respaldo.jwlibrary)**
+- ⭐ **[Descargar `Backup_iPad_pt14g_Una_Tarjeta_Todo_en_Uno.jwlibrary` (1 Tarjeta lateral Todo-en-Uno por párrafo en `pt14g`, 5.53 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Backup_iPad_pt14g_Una_Tarjeta_Todo_en_Uno.jwlibrary)**
 
 ---
 
