@@ -1,0 +1,89 @@
+GUÍA EXACTA Y PROMPTS PARA CREAR TUS REPASOS EN AUDIO (NOTEBOOKLM Y ALTERNATIVAS)
+================================================================================
+
+1. RESPUESTA SOBRE NOTEBOOKLM (https://notebooklm.google.com)
+------------------------------------------------------------
+¿Se puede hacer en NotebookLM?
+  SÍ, pero debes saber por qué antes no te gustó y cómo configurarlo bien:
+  - NotebookLM usa por defecto un formato tipo podcast ("Análisis profundo") con 2 anfitriones que
+    resumen el documento completo en ~10-15 minutos. Si le subes un Dossier crudo (~400 KB con texto
+    de bases de datos y códigos como it_S, rsg_S, nwtsty_S), se distrae mencionando "el dossier" y se
+    salta la mayoría de las preguntas.
+  - Además, el cuadro "Personalizar" (ícono de lápiz junto a Resumen de audio) tiene un LÍMITE ESTRICTO
+    DE 500 CARACTERES, y en español no existe el botón de duración "Más largo".
+
+CONFIGURACIÓN EXACTA EN NOTEBOOKLM:
+  Paso 1: Crea un cuaderno y sube los archivos limpios de la carpeta "01_Fuentes_Limpias_Para_NotebookLM".
+          (Si la lección es larga y está dividida en Parte 1 / Parte 2 en "01B_Partes_Para_NotebookLM_Lecciones_Largas",
+          usa esas partes para que NotebookLM no comprima tantas preguntas en pocos minutos).
+  Paso 2: En la columna izquierda ("Fuentes"), DEJA MARCADA ÚNICAMENTE 1 SOLA LECCIÓN (o 1 Parte)
+          antes de generar el audio. ¡Nunca generes el audio con varias lecciones activas a la vez!
+  Paso 3: En el panel derecho ("Studio" -> "Resumen de audio"), haz clic en el ícono del LÁPIZ ("Personalizar"):
+          - Formato: Análisis profundo
+          - Idioma: Español
+          - Pega este PROMPT EXACTO (415 caracteres, cabe completo en el límite de 500):
+
+Formato estricto de repaso teocrático con dos voces: 1) Un maestro testigo de Jehová introduce el tema de la lección. 2) Un alumno hace en orden las preguntas exactas de la lección. 3) El maestro da primero la respuesta directa y luego explica el porqué citando solo los versículos y publicaciones de la fuente. Prohibido inventar textos, añadir información externa o usar tono de pódcast informal. Español natural.
+
+  NOTA IMPORTANTE SOBRE NOTEBOOKLM:
+  Aun con este prompt, NotebookLM redacta su propio guion en vivo y tiende a agrupar preguntas si la fuente
+  es extensa. Si quieres FIDELIDAD EXACTA DEL 100 % (que el Alumno haga TODAS las preguntas de la lección
+  en orden exacto sin omitir ninguna y el Maestro responda citando cada referencia sin inventar nada), usa
+  la Opción 2 o la Opción 3 de abajo con los archivos que ya preparé para ti.
+
+--------------------------------------------------------------------------------
+2. LA MEJOR ALTERNATIVA WEB GRATUITA (100 % EXACTA Y CON 2 VOCES: MAESTRO Y ALUMNO)
+   Google AI Studio — Speech Generation (https://aistudio.google.com/generate-speech)
+--------------------------------------------------------------------------------
+Por qué es mejor para lo que buscas:
+  - Totalmente gratis con tu cuenta de Google en navegador (PC, Mac o iPad).
+  - Modo "Multi-speaker audio" (2 voces distintas en español: Maestro y Alumno).
+  - CERO alucinaciones ni omisiones: lee literalmente el guion preparado con todas tus preguntas y respuestas.
+  - Te permite descargar el archivo de audio (.wav / .mp3) para escucharlo en el auto o caminando.
+
+Cómo usarlo en 4 pasos:
+  Paso 1: Abre https://aistudio.google.com/generate-speech
+  Paso 2: En el panel derecho cambia "Single-speaker" a "Multi-speaker".
+          - Speaker 1 Name: Maestro  (elige una voz masculina serena y cálida, ej. Orus o Charon)
+          - Speaker 2 Name: Alumno   (elige otra voz clara y natural, ej. Puck, Fenrir o Kore)
+  Paso 3: En "Style instructions" (si aparece arriba del cuadro), escribe:
+          Lee en español latinoamericano natural, con ritmo pausado, cálido y respetuoso, como un hermano
+          cristiano experimentado repasando una lección bíblica con un estudiante.
+  Paso 4: Abre cualquier archivo de la carpeta "03_Partes_Para_Google_AI_Studio/" (ya vienen divididos en
+          bloques de <= 6,200 caracteres para que no se corten en el límite de 10 minutos ni de tokens),
+          copia todo su texto, pégalo y pulsa Run / Generate.
+
+--------------------------------------------------------------------------------
+3. LA OPCIÓN MÁS CÓMODA PARA ESCUCHAR EN IPAD / TELÉFONO SIN COPIAR Y PEGAR
+   App ElevenReader (https://elevenreader.io — iOS / iPadOS / Android)
+--------------------------------------------------------------------------------
+  - Te da 10 horas gratis al mes de voces neurales ultranaturales en español.
+  - Importa el archivo único "Guia_Estudio_Maestro_Alumno_Audio.epub".
+  - Elige cualquier lección en el índice y escúchala seguida mientras manejas o caminas.
+  - Alternativas parecidas gratuitas:
+      * Microsoft Edge ("Leer en voz alta" abriendo cualquier archivo .txt o el .epub).
+      * iPad / iPhone (Apple Books con el .epub + Accesibilidad "Contenido leído").
+      * ElevenLabs Studio (https://elevenlabs.io/app/studio) para generar audiolibros multipista MP3.
+
+--------------------------------------------------------------------------------
+4. PROMPT MAESTRO COMPLETO PARA USAR CON OTRA IA (GEMINI, CHATGPT, CLAUDE O CHAT DE NOTEBOOKLM)
+--------------------------------------------------------------------------------
+Si quieres entregarle un archivo de "01_Fuentes_Limpias_Para_NotebookLM/" a Gemini, ChatGPT, Claude
+o al Chat de NotebookLM para pedirle un guion adaptado (ej. más breve o enfocado en ciertos textos):
+
+  Eres un asistente de estudio para la Escuela del Servicio de Precursor de los Testigos de Jehová.
+  Tu única fuente de verdad es el archivo de la lección adjunto. TIENES PROHIBIDO agregar doctrinas
+  externas, citar versículos que no figuren en la fuente, mencionar códigos de archivo o inventar datos.
+
+  Transforma el archivo adjunto en un guion listo para audio con exactamente dos hablantes:
+  - "Maestro:" (un hermano testigo de Jehová experimentado, respetuoso, claro y didáctico).
+  - "Alumno:" (un estudiante aplicado que pregunta siguiendo el orden exacto de la lección).
+
+  Estructura obligatoria:
+  1. Empieza con "Maestro:" saludando brevemente e introduciendo el tema completo de la lección según
+     la sección de Introducción o Texto temático del archivo adjunto.
+  2. Luego, para CADA pregunta o punto de estudio de la lección en su orden exacto:
+     - "Alumno:" formula la pregunta de la lección con naturalidad.
+     - "Maestro:" da primero la respuesta directa y luego explica el porqué respaldándose exclusivamente
+       en el análisis bíblico y las referencias descargadas en la fuente, mencionando los libros bíblicos
+       y publicaciones por su nombre completo en español.

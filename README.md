@@ -1,6 +1,24 @@
-# Notas para JW Library (`.jwlibrary`), EPUB 3 Interactivo y Dossiers de Estudio (`pt14_S`, `nwtsty_S`, `rsg_S` e `it_S`)
+# Notas para JW Library (`.jwlibrary`), EPUB 3 Interactivo, Repasos en Audio y Dossiers de Estudio (`pt14_S`, `nwtsty_S`, `rsg_S` e `it_S`)
 
 Haz clic en cualquiera de los siguientes enlaces para descargar directamente el archivo a tu computadora, teléfono o tableta:
+
+## 🎧 Repasos en Audio: Diálogo Maestro y Alumno + Fuentes Limpias para NotebookLM / IA
+*Generados íntegramente a partir de tus fuentes verificadas (`pt14_S`, `nwtsty_S`, `it_S` y `rsg_S` — **1,097 unidades** en 36 lecciones/unidades), limpiando al 100 % la jerga técnica de bases de datos y expandiendo citas bíblicas (`Juan 17, versículo 3`), nombres de publicaciones (`La Atalaya del 15 de diciembre de 2015`, `Perspicacia para comprender las Escrituras`, etc.) y abreviaturas al español hablado natural, **sin añadir doctrina externa**:*
+
+- 🎧 **[Descargar `Guia_Estudio_Maestro_Alumno_Audio.epub` (Recomendado para escuchar de corrido en ElevenReader / Apple Books / Edge, 745.9 KB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/Guia_Estudio_Maestro_Alumno_Audio.epub)**
+  - EPUB 3 limpio listo para importar en **ElevenReader** (`https://elevenreader.io`, iOS/iPadOS/Android — 10 horas gratis al mes con voces neurales en español) o **Apple Books**: el **Maestro** introduce cada lección, el **Alumno** formula todas las preguntas en su orden exacto y el **Maestro** responde de forma directa explicando el porqué con los textos bíblicos y las referencias descargadas.
+- 🎙️ **[Descargar `pt14_S_Guiones_Audio_Maestro_Alumno.zip` (Guiones completos + 529 partes listas para Google AI Studio Multi-speaker, 1.88 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/pt14_S_Guiones_Audio_Maestro_Alumno.zip)**
+  - Incluye `02_Guiones_Maestro_Alumno_MultiVoz/` (36 guiones completos `.txt` por lección) + `03_Partes_Para_Google_AI_Studio/` (529 archivos ya divididos en bloques `<= 6,200` caracteres cortados únicamente entre turnos completos para pegar directo en **[Google AI Studio — Speech Generation](https://aistudio.google.com/generate-speech)** usando modo **Multi-speaker**: voz `Maestro` + voz `Alumno`, 100 % fiel sin omisiones ni alucinaciones).
+- 🤖 **[Descargar `pt14_S_Fuentes_Limpias_NotebookLM.zip` (Fuentes limpias para NotebookLM / Gemini / ChatGPT / Claude, 1.53 MB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/pt14_S_Fuentes_Limpias_NotebookLM.zip)**
+  - Incluye `01_Fuentes_Limpias_Para_NotebookLM/` (36 archivos limpios `.txt`) + `01B_Partes_Para_NotebookLM_Lecciones_Largas/` (113 partes para lecciones extensas de `> 26,000` caracteres, para que NotebookLM no comprima ni se salte preguntas) + `00_GUIA_Y_PROMPTS_EXACTOS.txt`.
+- 📋 **[Ver o descargar `00_GUIA_Y_PROMPTS_EXACTOS.txt` (Guía paso a paso y prompts exactos, 6.7 KB)](https://github.com/brandonrosaleslhest-del/jwpub-markdown-notebooklm/raw/main/00_GUIA_Y_PROMPTS_EXACTOS.txt)**
+
+**Prompt exacto para NotebookLM (*Studio -> Resumen de audio -> lápiz Personalizar*, 415/500 caracteres, marcando solo 1 fuente/parte a la vez en Español + *Análisis profundo*):**
+```text
+Formato estricto de repaso teocrático con dos voces: 1) Un maestro testigo de Jehová introduce el tema de la lección. 2) Un alumno hace en orden las preguntas exactas de la lección. 3) El maestro da primero la respuesta directa y luego explica el porqué citando solo los versículos y publicaciones de la fuente. Prohibido inventar textos, añadir información externa o usar tono de pódcast informal. Español natural.
+```
+
+---
 
 ## 🌟 SOLUCIÓN DIRECTA PARA TU IPAD / SAMSUNG (Sobre el libro oficial `pt14` — Sin error de instalación de `.jwpub`)
 *Fusionadas directamente con tu copia de seguridad de **iPad** (`UserdataBackup_2026-11-14_iPad.jwlibrary` — Schema v16). Funcionan de inmediato en la **última versión de JW Library** sobre el libro oficial `pt14` sin necesidad de instalar un `.jwpub` modificado, **respetando al 100% tus 26 notas personales en `pt14` (etiquetadas como `0. Mis Notas Personales (pt14)`), tus 133 subrayados personales por palabras en `pt14` (sin sobrescribir los 68 párrafos que tú ya habías subrayado), tus 11,720 subrayados totales y tus 161 cuadros de texto**:*
