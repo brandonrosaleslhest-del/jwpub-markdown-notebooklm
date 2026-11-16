@@ -310,7 +310,7 @@ def synthesize_part_with_fallback(
                     last_err = err
                     msg = str(err)
                     low = msg.lower()
-                    if any(k in low for k in ("per day", "requests per day", "rpd")):
+                    if any(k in low for k in ("per day", "requests per day", "rpd", "limit: 0")):
                         print(f"   🔄 {model_id} alcanzó su límite diario; cambiando al siguiente modelo...")
                         exhausted_models.add(model_id)
                         model_daily_exhausted = True
