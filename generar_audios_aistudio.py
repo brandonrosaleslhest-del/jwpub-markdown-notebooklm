@@ -2,8 +2,8 @@
 """
 Generador Automático de Repasos en Audio (Maestro y Alumno) con Google AI Studio.
 Descarga automáticamente los guiones limpios, detecta el mejor modelo TTS disponible
-en tu API Key, llama a Gemini TTS (Multi-speaker) y une todas las partes de cada
-lección en un solo archivo .mp3 y .wav listo para escuchar.
+en tu API Key (SDK + REST nativo v1beta), llama a Gemini TTS (Multi-speaker) y
+une todas las partes de cada lección en un solo archivo .mp3 y .wav.
 
 Uso rápido en terminal (PC / Mac / Linux):
   export GEMINI_API_KEY="TU_API_KEY_DE_AI_STUDIO"
@@ -14,11 +14,13 @@ Uso rápido en terminal (PC / Mac / Linux):
 import argparse
 import base64
 import io
+import json
 import os
 import re
 import shutil
 import subprocess
 import time
+import urllib.error
 import urllib.request
 import wave
 import zipfile
@@ -64,31 +66,7 @@ def ensure_scripts_downloaded(work_dir: Path) -> Path:
     return parts_dir
 
 
-def discover_tts_models(client, preferred: str = "auto") -> list[str]:
-    available = []
-    try:
-        for m in client.models.list():
-            name = getattr(m, "name", "") or ""
-            short = name.replace("models/", "")
-            if "tts" in short.lower():
-                available.append(short)
-    except Exception:
-        pass
-
-    ordered = []
-    if preferred and preferred != "auto":
-        ordered.append(preferred)
-    for m in available:
-        if m not in ordered:
-            ordered.append(m)
-    for m in CANDIDATE_MODELS:
-        if m not in ordered:
-            ordered.append(m)
-    return ordered
-
-
 def parse_script_turns(text: str):
-    """Divide un archivo de guion en turnos [('Maestro'|'Alumno', texto_limpio)]."""
     turns = []
     cur_speaker = None
     cur_lines = []
@@ -150,57 +128,29 @@ def convert_wav_to_mp3(wav_path: Path, mp3_path: Path) -> bool:
     return res.returncode == 0 and mp3_path.exists()
 
 
-def _call_interactions(client, model_id, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno):
-    speakers_present = {sp for sp, _ in turns}
-    if "3.8" in model_id:
-        if len(speakers_present) == 1:
-            only_sp = next(iter(speakers_present))
-            v_name = voice_maestro if only_sp == "Maestro" else voice_alumno
-            s_text = style_maestro if only_sp == "Maestro" else style_alumno
-            full_txt = "\n\n".join(t for _, t in turns)
-            inter = client.interactions.create(
-                model=model_id,
-                input=[{"type": "text", "text": full_txt, "annotations": [{"type": "speech_metadata", "style": s_text}]}],
-                response_format={"type": "audio"},
-                generation_config={"speech_config": [{"voice": v_name}]},
-            )
-        else:
-            inter = client.interactions.create(
-                model=model_id,
-                input=[
-                    {
-                        "type": "text",
-                        "text": t_txt,
-                        "annotations": [{
-                            "type": "speech_metadata",
-                            "speaker": sp,
-                            "style": style_maestro if sp == "Maestro" else style_alumno,
-                        }],
-                    }
-                    for sp, t_txt in turns
-                ],
-                response_format={"type": "audio"},
-                generation_config={
-                    "speech_config": [
-                        {"speaker": "Maestro", "voice": voice_maestro},
-                        {"speaker": "Alumno", "voice": voice_alumno},
-                    ]
-                },
-            )
-        return base64.b64decode(inter.output_audio.data)
+def _http_post_json(url: str, headers: dict, payload: dict) -> dict:
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", **headers},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=180) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"HTTP {e.code}: {body[:260]}") from e
 
-    # Modelos 3.1 / 2.5 con Interactions API
-    if len(speakers_present) == 1:
-        only_sp = next(iter(speakers_present))
+
+def _call_rest_v1beta_generate(api_key, model_id, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno):
+    speakers = {sp for sp, _ in turns}
+    if len(speakers) == 1:
+        only_sp = next(iter(speakers))
         v_name = voice_maestro if only_sp == "Maestro" else voice_alumno
         s_text = style_maestro if only_sp == "Maestro" else style_alumno
         prompt = f"{s_text}\n\n" + "\n\n".join(t for _, t in turns)
-        inter = client.interactions.create(
-            model=model_id,
-            input=prompt,
-            response_format={"type": "audio"},
-            generation_config={"speech_config": [{"voice": v_name}]},
-        )
+        speech_cfg = {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": v_name}}}
     else:
         prompt = (
             f"Lee en voz alta esta conversación de estudio bíblico en español natural.\n"
@@ -208,34 +158,97 @@ def _call_interactions(client, model_id, turns, script_text, voice_maestro, voic
             f"Alumno: {style_alumno}\n\n"
             f"{script_text.strip()}"
         )
-        inter = client.interactions.create(
-            model=model_id,
-            input=prompt,
-            response_format={"type": "audio"},
-            generation_config={
-                "speech_config": [
-                    {"speaker": "Maestro", "voice": voice_maestro},
-                    {"speaker": "Alumno", "voice": voice_alumno},
+        speech_cfg = {
+            "multiSpeakerVoiceConfig": {
+                "speakerVoiceConfigs": [
+                    {"speaker": "Maestro", "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice_maestro}}},
+                    {"speaker": "Alumno", "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice_alumno}}},
                 ]
-            },
-        )
-    return base64.b64decode(inter.output_audio.data)
+            }
+        }
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseModalities": ["AUDIO"],
+            "speechConfig": speech_cfg,
+        },
+    }
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_id}:generateContent"
+    data = _http_post_json(url, {"x-goog-api-key": api_key}, payload)
+    b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
+    return base64.b64decode(b64)
 
 
-def _call_generate_content(client, model_id, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno):
+def _call_rest_v1beta_interactions(api_key, model_id, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno):
+    speakers = {sp for sp, _ in turns}
+    if "3.8" in model_id:
+        if len(speakers) == 1:
+            only_sp = next(iter(speakers))
+            v_name = voice_maestro if only_sp == "Maestro" else voice_alumno
+            s_text = style_maestro if only_sp == "Maestro" else style_alumno
+            payload = {
+                "model": model_id,
+                "input": [{"type": "text", "text": "\n\n".join(t for _, t in turns), "annotations": [{"type": "speech_metadata", "style": s_text}]}],
+                "response_format": {"type": "audio"},
+                "generation_config": {"speech_config": [{"voice": v_name}]},
+            }
+        else:
+            payload = {
+                "model": model_id,
+                "input": [
+                    {"type": "text", "text": t_txt, "annotations": [{"type": "speech_metadata", "speaker": sp, "style": style_maestro if sp == "Maestro" else style_alumno}]}
+                    for sp, t_txt in turns
+                ],
+                "response_format": {"type": "audio"},
+                "generation_config": {"speech_config": [{"speaker": "Maestro", "voice": voice_maestro}, {"speaker": "Alumno", "voice": voice_alumno}]},
+            }
+    else:
+        if len(speakers) == 1:
+            only_sp = next(iter(speakers))
+            v_name = voice_maestro if only_sp == "Maestro" else voice_alumno
+            s_text = style_maestro if only_sp == "Maestro" else style_alumno
+            payload = {
+                "model": model_id,
+                "input": f"{s_text}\n\n" + "\n\n".join(t for _, t in turns),
+                "response_format": {"type": "audio"},
+                "generation_config": {"speech_config": [{"voice": v_name}]},
+            }
+        else:
+            prompt = (
+                f"Lee en voz alta esta conversación de estudio bíblico en español natural.\n"
+                f"Maestro: {style_maestro}\n"
+                f"Alumno: {style_alumno}\n\n"
+                f"{script_text.strip()}"
+            )
+            payload = {
+                "model": model_id,
+                "input": prompt,
+                "response_format": {"type": "audio"},
+                "generation_config": {"speech_config": [{"speaker": "Maestro", "voice": voice_maestro}, {"speaker": "Alumno", "voice": voice_alumno}]},
+            }
+    url = "https://generativelanguage.googleapis.com/v1beta/interactions"
+    data = _http_post_json(url, {"x-goog-api-key": api_key, "Api-Revision": "2026-05-20"}, payload)
+    for step in reversed(data.get("steps", [])):
+        for c in step.get("content", []):
+            if c.get("type") == "audio" and c.get("data"):
+                return base64.b64decode(c["data"])
+    if "output_audio" in data and data["output_audio"].get("data"):
+        return base64.b64decode(data["output_audio"]["data"])
+    raise RuntimeError(f"Respuesta sin audio en interactions: {str(data)[:200]}")
+
+
+def _call_sdk_generate(client, model_id, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno):
     from google.genai import types
-    speakers_present = {sp for sp, _ in turns}
-    if len(speakers_present) == 1:
-        only_sp = next(iter(speakers_present))
+    speakers = {sp for sp, _ in turns}
+    if len(speakers) == 1:
+        only_sp = next(iter(speakers))
         v_name = voice_maestro if only_sp == "Maestro" else voice_alumno
         s_text = style_maestro if only_sp == "Maestro" else style_alumno
         prompt = f"{s_text}\n\n" + "\n\n".join(t for _, t in turns)
         cfg = types.GenerateContentConfig(
             response_modalities=["AUDIO"],
             speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=v_name)
-                )
+                voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=v_name))
             ),
         )
     else:
@@ -250,18 +263,8 @@ def _call_generate_content(client, model_id, turns, script_text, voice_maestro, 
             speech_config=types.SpeechConfig(
                 multi_speaker_voice_config=types.MultiSpeakerVoiceConfig(
                     speaker_voice_configs=[
-                        types.SpeakerVoiceConfig(
-                            speaker="Maestro",
-                            voice_config=types.VoiceConfig(
-                                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_maestro)
-                            ),
-                        ),
-                        types.SpeakerVoiceConfig(
-                            speaker="Alumno",
-                            voice_config=types.VoiceConfig(
-                                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_alumno)
-                            ),
-                        ),
+                        types.SpeakerVoiceConfig(speaker="Maestro", voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_maestro))),
+                        types.SpeakerVoiceConfig(speaker="Alumno", voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_alumno))),
                     ]
                 )
             ),
@@ -272,6 +275,7 @@ def _call_generate_content(client, model_id, turns, script_text, voice_maestro, 
 
 
 def synthesize_part_with_fallback(
+    api_key: str,
     client,
     script_text: str,
     candidate_models: list[str],
@@ -280,30 +284,25 @@ def synthesize_part_with_fallback(
     style_maestro: str,
     style_alumno: str,
 ):
-    turns = parse_script_turns(script_text)
+    turns = parse_turns(script_text)
     last_err = None
 
     for model_id in candidate_models:
-        methods = []
-        if hasattr(client, "interactions"):
-            methods.append(("interactions", _call_interactions))
-        methods.append(("generate_content", _call_generate_content))
-
+        methods = [
+            ("rest_v1beta_interactions", lambda m: _call_rest_v1beta_interactions(api_key, m, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno)),
+            ("rest_v1beta_generate", lambda m: _call_rest_v1beta_generate(api_key, m, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno)),
+            ("sdk_generate", lambda m: _call_sdk_generate(client, m, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno)),
+        ]
         for m_name, fn in methods:
             for retry in range(1, 4):
                 try:
-                    audio = fn(
-                        client, model_id, turns, script_text,
-                        voice_maestro, voice_alumno, style_maestro, style_alumno,
-                    )
-                    return audio, model_id
+                    audio = fn(model_id)
+                    return audio, f"{model_id} [{m_name}]"
                 except Exception as err:
                     last_err = err
                     msg = str(err)
-                    # Errores permanentes de modelo/esquema: pasar al siguiente método o modelo sin esperar
-                    if any(code in msg for code in ("404", "not found", "NOT_FOUND", "Unknown name", "INVALID_ARGUMENT", "400")):
+                    if any(code in msg for code in ("404", "401", "403", "not found", "NOT_FOUND", "Unknown name", "INVALID_ARGUMENT", "400")):
                         break
-                    # Errores temporales (cuota 429 o servidor 500/503): reintentar con pausa
                     wait_s = 12 * retry
                     print(f"   ⏳ {model_id} ({m_name}) ocupado: {msg[:120]}. Reintentando en {wait_s}s...")
                     time.sleep(wait_s)
@@ -332,10 +331,14 @@ def generate_lessons(
     delay_between_requests_sec: float = 3.0,
 ):
     from google import genai
+    from google.genai import types
 
-    client = genai.Client(api_key=api_key)
-    models_to_try = discover_tts_models(client, model_id)
-    print(f"🔎 Modelos TTS candidatos para tu clave: {models_to_try[:5]}")
+    client = genai.Client(
+        api_key=api_key,
+        vertexai=False,
+        http_options=types.HttpOptions(api_version="v1beta"),
+    )
+    models_to_try = CANDIDATE_MODELS if model_id == "auto" else [model_id] + [m for m in CANDIDATE_MODELS if m != model_id]
 
     parts_dir = ensure_scripts_downloaded(out_dir / "_guiones_descargados")
     by_lesson = group_parts_by_lesson(parts_dir)
@@ -373,7 +376,8 @@ def generate_lessons(
                 print(f"  [{idx}/{len(part_files)}] 🎙️ Sintetizando {pf.name} ({pf.stat().st_size:,} bytes)...")
                 script_text = pf.read_text(encoding="utf-8")
                 order = [working_model] + [m for m in models_to_try if m != working_model] if working_model else models_to_try
-                raw_bytes, used_model = synthesize_part_with_fallback(
+                raw_bytes, used_info = synthesize_part_with_fallback(
+                    api_key=api_key,
                     client=client,
                     script_text=script_text,
                     candidate_models=order,
@@ -382,9 +386,10 @@ def generate_lessons(
                     style_maestro=DEFAULT_STYLE_MAESTRO,
                     style_alumno=DEFAULT_STYLE_ALUMNO,
                 )
-                if working_model != used_model:
-                    working_model = used_model
-                    print(f"   ✅ Modelo activo confirmado: {working_model}")
+                used_m = used_info.split(" ")[0]
+                if working_model != used_m:
+                    working_model = used_m
+                    print(f"   ✅ Modelo activo confirmado: {used_info}")
                 pcm_part, sample_rate, channels, width = extract_pcm_from_audio_bytes(raw_bytes)
                 save_wav_from_pcm(cached_wav, pcm_part, sample_rate, channels, width)
                 if idx < len(part_files) and delay_between_requests_sec > 0:
