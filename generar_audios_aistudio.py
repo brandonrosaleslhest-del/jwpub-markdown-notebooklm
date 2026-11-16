@@ -283,17 +283,25 @@ def synthesize_part_with_fallback(
     voice_alumno: str,
     style_maestro: str,
     style_alumno: str,
+    exhausted_models: set | None = None,
 ):
     turns = parse_turns(script_text)
     last_err = None
+    if exhausted_models is None:
+        exhausted_models = set()
 
     for model_id in candidate_models:
+        if model_id in exhausted_models:
+            continue
         methods = [
             ("rest_v1beta_interactions", lambda m: _call_rest_v1beta_interactions(api_key, m, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno)),
             ("rest_v1beta_generate", lambda m: _call_rest_v1beta_generate(api_key, m, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno)),
             ("sdk_generate", lambda m: _call_sdk_generate(client, m, turns, script_text, voice_maestro, voice_alumno, style_maestro, style_alumno)),
         ]
+        model_daily_exhausted = False
         for m_name, fn in methods:
+            if model_daily_exhausted:
+                break
             for retry in range(1, 4):
                 try:
                     audio = fn(model_id)
@@ -301,9 +309,15 @@ def synthesize_part_with_fallback(
                 except Exception as err:
                     last_err = err
                     msg = str(err)
+                    low = msg.lower()
+                    if any(k in low for k in ("per day", "requests per day", "rpd")):
+                        print(f"   🔄 {model_id} alcanzó su límite diario; cambiando al siguiente modelo...")
+                        exhausted_models.add(model_id)
+                        model_daily_exhausted = True
+                        break
                     if any(code in msg for code in ("404", "401", "403", "not found", "NOT_FOUND", "Unknown name", "INVALID_ARGUMENT", "400")):
                         break
-                    wait_s = 12 * retry
+                    wait_s = 15 * retry
                     print(f"   ⏳ {model_id} ({m_name}) ocupado: {msg[:120]}. Reintentando en {wait_s}s...")
                     time.sleep(wait_s)
 
@@ -356,6 +370,7 @@ def generate_lessons(
 
     generated_files = []
     working_model = None
+    exhausted_models = set()
 
     for lesson_key in selected_keys:
         part_files = by_lesson[lesson_key]
@@ -375,7 +390,7 @@ def generate_lessons(
             else:
                 print(f"  [{idx}/{len(part_files)}] 🎙️ Sintetizando {pf.name} ({pf.stat().st_size:,} bytes)...")
                 script_text = pf.read_text(encoding="utf-8")
-                order = [working_model] + [m for m in models_to_try if m != working_model] if working_model else models_to_try
+                order = [m for m in ([working_model] + [x for x in models_to_try if x != working_model] if working_model else models_to_try) if m not in exhausted_models]
                 raw_bytes, used_info = synthesize_part_with_fallback(
                     api_key=api_key,
                     client=client,
@@ -385,6 +400,7 @@ def generate_lessons(
                     voice_alumno=voice_alumno,
                     style_maestro=DEFAULT_STYLE_MAESTRO,
                     style_alumno=DEFAULT_STYLE_ALUMNO,
+                    exhausted_models=exhausted_models,
                 )
                 used_m = used_info.split(" ")[0]
                 if working_model != used_m:
